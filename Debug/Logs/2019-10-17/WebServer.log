@@ -1,0 +1,127 @@
+****************************日志信息****************************
+【出现时间】：2019/10/17 15:27:20
+【日志描述】：处理请求出错
+【详细信息】：rawUrl: /StopWS
+【异常类型】：NullReferenceException
+【异常信息】：Object reference not set to an instance of an object.
+【堆栈调用】：   at CameraOper.WebSocketDefine.Stop()
+   at CameraOper.Camera.StopWebSocket()
+   at UtilServer.IDReaderAPI.HttpServer_NewQueryEvent(String rawUrl, HttpListenerContext context) in C:\Users\private\Desktop\UtilServer\UtilServer\IDReaderAPI.cs:line 209
+   at UtilServer.HttpServer.HandleRequest(Object ctx) in C:\Users\private\Desktop\UtilServer\UtilServer\HttpServer.cs:line 184
+【内部异常】：
+【内部堆栈】：
+***************************************************************
+
+****************************日志信息****************************
+【出现时间】：2019/10/17 15:29:09
+【日志描述】：处理请求出错
+【详细信息】：rawUrl: /StopCamera
+【异常类型】：NullReferenceException
+【异常信息】：Object reference not set to an instance of an object.
+【堆栈调用】：   at CameraOper.Camera.StopDevice()
+   at CameraOper.Camera.Stop()
+   at UtilServer.IDReaderAPI.HttpServer_NewQueryEvent(String rawUrl, HttpListenerContext context) in C:\Users\private\Desktop\UtilServer\UtilServer\IDReaderAPI.cs:line 197
+   at UtilServer.HttpServer.HandleRequest(Object ctx) in C:\Users\private\Desktop\UtilServer\UtilServer\HttpServer.cs:line 184
+【内部异常】：
+【内部堆栈】：
+***************************************************************
+
+****************************日志信息****************************
+【出现时间】：2019/10/17 15:46:11
+【日志描述】：处理请求出错
+【详细信息】：rawUrl: /StopCamera
+【异常类型】：NullReferenceException
+【异常信息】：Object reference not set to an instance of an object.
+【堆栈调用】：   at CameraOper.Camera.StopDevice()
+   at CameraOper.Camera.Stop()
+   at UtilServer.IDReaderAPI.HttpServer_NewQueryEvent(String rawUrl, HttpListenerContext context) in C:\Users\private\Desktop\UtilServer\UtilServer\IDReaderAPI.cs:line 197
+   at UtilServer.HttpServer.HandleRequest(Object ctx) in C:\Users\private\Desktop\UtilServer\UtilServer\HttpServer.cs:line 184
+【内部异常】：
+【内部堆栈】：
+***************************************************************
+
+****************************日志信息****************************
+【出现时间】：2019/10/17 15:51:56
+【日志描述】：处理请求出错
+【详细信息】：rawUrl: /StopCamera
+【异常类型】：NullReferenceException
+【异常信息】：Object reference not set to an instance of an object.
+【堆栈调用】：   at CameraOper.Camera.StopDevice()
+   at CameraOper.Camera.Stop()
+   at UtilServer.IDReaderAPI.HttpServer_NewQueryEvent(String rawUrl, HttpListenerContext context) in C:\Users\private\Desktop\UtilServer\UtilServer\IDReaderAPI.cs:line 197
+   at UtilServer.HttpServer.HandleRequest(Object ctx) in C:\Users\private\Desktop\UtilServer\UtilServer\HttpServer.cs:line 184
+【内部异常】：
+【内部堆栈】：
+***************************************************************
+
+****************************日志信息****************************
+【出现时间】：2019/10/17 15:52:47
+【日志描述】：处理请求出错
+【详细信息】：rawUrl: /StopCamera
+【异常类型】：NullReferenceException
+【异常信息】：Object reference not set to an instance of an object.
+【堆栈调用】：   at CameraOper.Camera.StopDevice()
+   at CameraOper.Camera.Stop()
+   at UtilServer.IDReaderAPI.HttpServer_NewQueryEvent(String rawUrl, HttpListenerContext context) in C:\Users\private\Desktop\UtilServer\UtilServer\IDReaderAPI.cs:line 197
+   at UtilServer.HttpServer.HandleRequest(Object ctx) in C:\Users\private\Desktop\UtilServer\UtilServer\HttpServer.cs:line 184
+【内部异常】：
+【内部堆栈】：
+***************************************************************
+
+****************************日志信息****************************
+【出现时间】：2019/10/17 15:53:03
+【日志描述】：处理请求出错
+【详细信息】：rawUrl: /StopCamera
+【异常类型】：NullReferenceException
+【异常信息】：Object reference not set to an instance of an object.
+【堆栈调用】：   at CameraOper.Camera.StopDevice()
+   at CameraOper.Camera.Stop()
+   at UtilServer.IDReaderAPI.HttpServer_NewQueryEvent(String rawUrl, HttpListenerContext context) in C:\Users\private\Desktop\UtilServer\UtilServer\IDReaderAPI.cs:line 197
+   at UtilServer.HttpServer.HandleRequest(Object ctx) in C:\Users\private\Desktop\UtilServer\UtilServer\HttpServer.cs:line 184
+【内部异常】：
+【内部堆栈】：
+***************************************************************
+
+****************************日志信息****************************
+【出现时间】：2019/10/17 15:59:38
+【日志描述】：处理请求出错
+【详细信息】：rawUrl: /StopCamera
+【异常类型】：NullReferenceException
+【异常信息】：Object reference not set to an instance of an object.
+【堆栈调用】：   at AForge.Video.DirectShow.VideoCaptureDevice.Stop()
+   at CameraOper.Camera.StopDevice()
+   at CameraOper.Camera.Stop()
+   at UtilServer.IDReaderAPI.HttpServer_NewQueryEvent(String rawUrl, HttpListenerContext context) in C:\Users\private\Desktop\UtilServer\UtilServer\IDReaderAPI.cs:line 197
+   at UtilServer.HttpServer.HandleRequest(Object ctx) in C:\Users\private\Desktop\UtilServer\UtilServer\HttpServer.cs:line 184
+【内部异常】：
+【内部堆栈】：
+***************************************************************
+
+****************************日志信息****************************
+【出现时间】：2019/10/17 17:33:02
+【日志描述】：处理请求出错
+【详细信息】：rawUrl: /StopCamera
+【异常类型】：NullReferenceException
+【异常信息】：Object reference not set to an instance of an object.
+【堆栈调用】：   at CameraOper.Camera.StopDevice()
+   at CameraOper.Camera.Stop()
+   at UtilServer.IDReaderAPI.HttpServer_NewQueryEvent(String rawUrl, HttpListenerContext context)
+   at UtilServer.HttpServer.HandleRequest(Object ctx)
+【内部异常】：
+【内部堆栈】：
+***************************************************************
+
+****************************日志信息****************************
+【出现时间】：2019/10/17 17:41:29
+【日志描述】：处理请求出错
+【详细信息】：rawUrl: /StopCamera
+【异常类型】：NullReferenceException
+【异常信息】：Object reference not set to an instance of an object.
+【堆栈调用】：   at CameraOper.Camera.StopDevice()
+   at CameraOper.Camera.Stop()
+   at UtilServer.IDReaderAPI.HttpServer_NewQueryEvent(String rawUrl, HttpListenerContext context)
+   at UtilServer.HttpServer.HandleRequest(Object ctx)
+【内部异常】：
+【内部堆栈】：
+***************************************************************
+

@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <title>部门人员</title>
+	<link rel="stylesheet" href="../css/fonts/iconfont.css">
+    <link href="../css/publicCss/demo.css" rel="stylesheet" type="text/css" />
+    <style type="text/css">
+    body{
+        margin:0;padding:0;border:0;width:100%;height:100%;overflow:hidden;
+    }    
+    </style>      
+    <script src="../scripts/boot.js" type="text/javascript"></script>
+</head>
+<body>   
+<div class="mini-splitter" style="width:100%;height:100%;">
+    <div size="310" showCollapseButton="true">
+    	<div class="mini-title">部门</div>
+        <div class="mini-toolbar" style="padding:2px;border-top:0;border-left:0;border-right:0;">          	         	
+            <a class="mini-button" iconCls="icon-add" plain="true" onclick="addDept()">新增</a>                                      
+            <a class="mini-button" iconCls="icon-save" plain="true" onclick="editDept()">编辑</a>
+            <a class="mini-button" iconCls="icon-remove" plain="true" onclick="removeDept()">删除</a>
+            <span class="separator"></span> 
+            <a class="mini-button" onclick="deselectDept()">取消</a>
+        </div>
+        <div class="mini-fit">
+            <ul id="tree1" 
+            	class="mini-tree" 
+            	url="http://cloud.it-wy.cn:8082/Dept/GetAllDept" style="width:100%;"
+                showTreeIcon="true" 
+                textField="Name" 
+                idField="ID" 
+                parentField="ParentID" 
+                expandOnLoad="true" 
+                resultAsTree="false" 
+                onnodeselect="nodeselect"               
+                expandOnLoad="true" 
+                ondrawnode="onDrawNode" 
+                allowDrop="true" 
+            >        
+            </ul>
+        </div>
+    </div>
+    <div showCollapseButton="true">
+    	<div class="mini-title">用户</div>
+        <div class="mini-toolbar" style="padding:2px;border-top:0;border-left:0;border-right:0;">         	
+            <a class="mini-button" iconCls="icon-add" plain="true" onclick="addRow()">新增</a>
+            <!--<a class="mini-button" iconCls="icon-remove" plain="true" onclick="removeRow()">删除</a>-->                            
+            <a class="mini-button" iconCls="icon-save" plain="true" onclick="saveDept()">保存</a>
+            <span class="separator"></span>  
+            <a class="mini-button" iconCls="iconfont icon-shuaxin" plain="true" onclick="reload()">刷新</a>
+        </div>
+        <div class="mini-fit" >
+            <div id="grid1" class="mini-datagrid" style="width:100%;height:100%;" 
+                borderStyle="border:0;"
+                url="http://cloud.it-wy.cn:8082/Users/GetUser"
+                allowResize="true"
+                showFilterRow="true" 
+                allowCellSelect="true" 
+                allowCellEdit="true"
+                editNextRowCell="true"
+                allowCellEdit="true" 
+                allowCellSelect="true" 
+                multiSelect="true" 
+    			editNextOnEnterKey="true"
+    			sizeList="[20,30,50,100]" 
+    			pageSize="20"
+    			showPageIndex="true" 
+    			showPageSize="true"
+            >
+                <div property="columns">            
+                    <div headerAlign="center" align="center" field="Name" width="120" allowSort="true" renderer="IsNull">用户姓名
+        				<input id="Name" property="filter" class="mini-textbox" onvaluechanged="onNameFilterChanged" style="width:100%;" />
+        				<input property="editor" class="mini-textbox" style="width:100%;" minWidth="200" />
+                    </div>      
+                    <div headerAlign="center" align="center" field="Password" width="120" allowSort="true" renderer="IsNull">用户密码 
+                    	<input property="editor" class="mini-textbox" style="width:100%;" minWidth="200" />
+                    </div>                
+                    <div align="center" headerAlign="center" field="SpaceQty" width="100" allowSort="true" renderer="IsNull">最大车位数
+                    	<input property="editor" class="mini-textbox" style="width:100%;" minWidth="200" />
+                    </div>            
+                    <div align="center" headerAlign="center" field="Tel" width="100" allowSort="true" renderer="IsNull">电话号码
+                        <input id="Tel" property="filter" class="mini-textbox" onvaluechanged="onNameFilterChanged" style="width:100%;" />
+                        <input property="editor" class="mini-textbox" style="width:100%;" minWidth="200" />
+                    </div>
+                    <div align="center" headerAlign="center" field="IDCard" width="100" allowSort="true" renderer="IsNull">身份证
+                    	<input property="editor" class="mini-textbox" style="width:100%;" minWidth="200" />
+                    </div>
+                    <div align="center" headerAlign="center" field="StoredValue" width="100" allowSort="true" renderer="IsNull">储值余额
+                    	<input property="editor" class="mini-textbox" style="width:100%;" minWidth="200" />
+                    </div>
+                    <div type="comboboxcolumn" autoShowPopup="true" align="center" headerAlign="center" field="OverSpaceNormalIn" width="100" allowSort="true" renderer="onGenderRenderer">超车位正常进入
+                    <input property="editor" class="mini-combobox" style="width:100%;" minWidth="200" data="OverSpaceNormalIn"/>
+                    </div>
+                    <div align="center" headerAlign="center" field="Remark" width="100" allowSort="true" renderer="IsNull">备注
+                    	<input property="editor" class="mini-textbox" style="width:100%;" minWidth="200" />
+                    </div>    
+                    <div name="action" width="100" headerAlign="center" align="center">操作</div>
+                </div>
+            </div>  
+        </div>
+    </div>        
+</div>
+    
+    <script type="text/javascript">
+        mini.parse();
+        var url,projectId,deptId,count;
+        projectId=sessionStorage.getItem('projectid');
+        var tree = mini.get("tree1");
+        var grid = mini.get("grid1");
+        treeLoad();
+        gridLoad();
+        //加载树
+        function treeLoad(){
+			tree.load({  
+				projectId: projectId
+			})
+        }
+		function gridLoad(){
+			grid.load({
+				ProjectID: projectId,
+				DeptID:'',
+				Name:''
+			},function(res){
+				grid.setTotalCount(res.result.count);
+			})
+		}
+        tree.on("nodeselect", function (e) {  //切换树级菜单时
+        	deptId = e.node.ID;
+            if (e.isLeaf) {
+                grid.load({ 
+                	ProjectID: e.node.ProjectID,
+                	DeptID:e.node.ID,
+                },function(res){
+                });
+            } else {
+                grid.setData([]);
+                grid.setTotalCount(0);
+            }
+        });
+        function editDept(){
+            var node = tree.getSelectedNode();
+            tree.beginEdit(node);
+        }
+        function addDept(){
+        	var node = tree.getSelectedNode();
+            var newNode = {};
+            tree.addNode(newNode, "add", node);
+            tree.selectNode(newNode);
+            tree.updateNode(newNode,{Name: "输入部门名称.."})
+            tree.beginEdit(newNode);
+        }
+        //取消选中
+        function deselectDept(){
+        	tree.selectNode(null);  //取消选中
+			grid.load({
+				ProjectID: projectId,
+				DeptID:'',
+				Name:''
+			})
+        }
+   		function removeDept(){  //删除部门(树状)
+   			var node = tree.getSelectedNode();
+   			if(!node){
+				mini.showTips({
+					content: '未选中部门',
+					state: 'danger',
+				});
+				return false;
+   			}
+			mini.confirm("确定删除选中部门？", "确定？",
+		        function (action) {
+		            if (action == "ok") {
+			   			$.ajax({
+			   				url:'http://cloud.it-wy.cn:8082/Dept/Delete',
+			   				type:'post',
+			   				data:{
+			   					Id:node.ID,
+			   				},
+			   				success:function(res){
+			   					mini.showTips({
+									content: '部门删除成功',
+									state: 'success',
+								});
+			            		treeLoad();
+			            		gridLoad();
+			   				},
+			   				error:function(err){
+			   					mini.showTips({
+									content: '接口请求失败',
+									state: 'danger',
+								});
+			   				}
+			   			})
+			   		}
+		        }
+		    )
+   		}
+        
+        tree.on('endedit',function(e){  //确定修改部门(树状)
+        	var confirmMsg,dept,resStatus;
+        	if(e.node.ID){
+        		confirmMsg='确定修改选中部门？'
+        		resStatus='部门修改成功'
+				dept=e.node
+        	}else{
+        		confirmMsg='确定新增该部门？'
+        		resStatus='部门新增成功'
+        		dept={
+        			ID:'',
+        			ProjectID:projectId,
+        			ParentID:e.node.ParentID,
+        			Name:e.node.Name,
+        			Levels:e.node._level,
+        			Remark:''
+        		}
+        	}
+        	mini.confirm(confirmMsg, "确定？",
+		        function (action) {
+		            if (action == "ok") {
+			        	$.ajax({
+			        		type:'post',
+			        		url:'http://cloud.it-wy.cn:8082/Dept/AddorUpdate',
+			        		async:true,
+			        		data:dept,
+			        		success:function(res){
+			        			if(res.Status){
+			        				mini.showTips({
+										content: resStatus,
+										state: 'success',
+									});
+			        			}else{
+			        				mini.showTips({
+										content: res.Msg,
+										state: 'danger',
+									});
+			        			}
+			        			treeLoad();
+			        		},
+			        		error:function(err){
+				    			mini.showTips({
+									content: '接口请求失败',
+									state: 'danger',
+								});
+								treeLoad();
+			        		}
+			        	});
+        			}else{
+        				treeLoad();
+        			}
+		        }
+		    );
+        })
+        
+        function addRow() {
+            var newRow = { Name: '点击单元格新增/编辑' };
+            grid.addRow(newRow, 0);
+            grid.beginEditCell(newRow, "LoginName");
+        }        
+        //操作栏按钮
+        grid.on("drawcell", function (e) {
+            var record = e.record;
+            var column = e.column;
+            var field = e.field;
+            var value = e.value;
+            //action列，超连接操作按钮
+            if (column.name == "action") {
+                e.cellStyle = "text-align:center";
+                e.cellHtml = '<a class="mini-button" style="background: #607d8b;color: white;padding: 5px 8px;border: none;border-radius: 4px;" href="javascript:autherBtn(\'' + record.ID + '\')"><i class="iconfont icon-shanchu1 style="padding-right: 6px;"></i>删除</a> '
+
+            }
+        });
+        function autherBtn(id){
+        	mini.confirm("确定删除记录？", "确定？",
+		        function (action) {
+		            if (action == "ok") {
+                    	$.ajax({
+			        		url:'http://cloud.it-wy.cn:8082/Users/Delete',
+			        		type:'post',
+			        		data:{
+			        			Id:id,
+			        			operatorName:'默认超级管理员'
+			        		},
+			        		success:function(res){
+								if(res.Status){
+									grid.reload();
+								}else{
+									mini.showTips({
+										content: res.Msg,
+										state: 'danger',
+									});
+								}
+			        		},
+			        		error:function(err){
+				    			mini.showTips({
+									content: '接口请求失败',
+									state: 'danger',
+								});
+			        		}
+			        	})
+		            }
+		        }
+		    );
+        }
+		function nodeselect(e){  //默认加载用户
+			deptId=e.node.ID;
+        	grid.load({ 
+            	ProjectID: e.node.ProjectID,
+            	DeptID:e.node.ID,
+            },function(res){
+            });
+        }
+        function onNameFilterChanged(e) { //搜索用户时
+        	var data,id;
+            var textbox = e.sender;
+            var key = textbox.getValue();
+            var node = tree.getSelectedNode();
+            if(!node){
+            	id=''
+            }else{
+            	id=node.ID
+            }
+            data={
+        		ProjectID: projectId,
+        		DeptID:id,
+        	}
+            if(textbox.id=='Tel'){
+            	data.Tel=key;
+            }else{
+            	data.Name=key;
+            }           
+            grid.load(data);
+        }
+
+        function removeRow() {
+            var rows = grid.getSelecteds();
+            if (rows.length > 0) {
+            	if(!rows[0].ID){
+            		grid.removeRows(rows, true);
+            		return false;
+            	}
+            	$.ajax({
+            		url:'http://cloud.it-wy.cn:8082/Users/Delete',
+            		type:'post',
+            		data:{
+            			Id:rows[0].ID,
+            			operatorName:'默认超级管理员'
+            		},
+            		success:function(res){
+						if(res.Status){
+							grid.reload();
+						}else{
+							mini.showTips({
+								content: res.Msg,
+								state: 'danger',
+							});
+						}
+            		},
+            		error:function(err){
+		    			mini.showTips({
+							content: '接口请求失败',
+							state: 'danger',
+						});
+            		}
+            	})
+//              
+            }else{
+    			mini.showTips({
+					content: '未选中用户',
+					state: 'danger',
+				});
+            }
+        }
+        function saveData() {
+        	grid.loading("保存中，请稍后......");
+            var data = grid.getChanges();
+            var dataEach={};
+            for(var i=0;i<data.length;i++){
+            	var len=false;
+            	data[i].DeptID=deptId;
+            	data[i].ProjectID=projectId;
+            	data[i].operatorName='默认超级管理员'
+            	dataEach=data[i];
+            	if(i==data.length-1){
+            		len=true;
+            	}
+            	addorUpdate(dataEach,len);
+            }
+//          var json = mini.encode(data);
+        } 
+        function addorUpdate(dataEach,len){
+        	$.ajax({
+                url: 'http://cloud.it-wy.cn:8082/Users/AddorUpdate',
+                data: dataEach,
+                type: "post",
+                success: function (text) {
+                	if(len==true){
+                		grid.reload();
+                	}
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    alert(jqXHR.responseText);
+                }
+            });
+        }
+        
+        var OverSpaceNormalIn = [{ id: 0, text: '否' }, { id: 1, text: '是'}];
+        function onGenderRenderer(e) {  //转table里的值
+            for (var i = 0, l = OverSpaceNormalIn.length; i < l; i++) {
+                var g = OverSpaceNormalIn[i];
+                if (g.id == e.value) return g.text;
+            }
+            return "";
+        }
+        //判断为空
+        function IsNull(e) {
+            if (e.value == "" || e.value == null) {
+                return "--";
+            }
+            else {
+                return e.value
+            }
+        }
+        function onDrawNode(e){
+        	var node = e.node;
+			if(node._level === 0) {
+				e.iconCls = "iconfont icon-bumen1";
+			} else if(node._level === 1) {
+				e.iconCls = "iconfont icon-bumen";
+			} else if(node._level === 2) {
+				e.iconCls = "iconfont icon-ziji";
+			} 
+        }
+        function reload(){
+        	grid.reload();
+        }
+    </script>
+
+</body>
+</html>

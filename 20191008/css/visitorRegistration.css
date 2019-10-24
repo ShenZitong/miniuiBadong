@@ -1,0 +1,54 @@
+.visitor-box,.interviewed-box{
+    padding: 0 20px;
+    height:300px;
+    border: 1px solid #aed0ea;
+    border-radius: 6px;
+    box-shadow: 4px 4px 4px 2px #ccc;
+    margin:20px auto;
+    min-width:750px;
+    max-width: 800px;
+    /*background: #aed0ea;*/
+}
+.visitor-box,.interviewed-box h1{
+	padding:0 20px;
+}
+.picture-box{
+	text-align: center;
+	border-radius: 6px;
+	background: #aed0ea;
+	/*border: 1px solid #aed0ea;*/
+	color:#fff;
+}
+.content-box table{
+	line-height: 40px;
+}
+.content-box .mini-textbox{
+	min-width: 200px;
+	margin-right: 20px;
+}
+.interviewed-box .content-box .mini-combobox,.mini-buttonedit,.mini-textarea .mini-textbox-border{
+	min-width: 250px;
+	margin-right: 20px;
+}
+.content-box table,.content-box .picture-box{
+	/*display:inline;*/
+	float:left;
+	margin-left: 40px;
+}
+.content-box .picture-box img{
+	width: 136px;
+}
+/*按钮*/
+.button-box{
+	text-align: center;
+	margin-top:100px;
+}
+.button-box span{
+	margin:0 20px;
+}
+.take-photo{
+	box-shadow: 2px 2px 4px #ccc;
+}
+.take-photo:active{
+	box-shadow: -1px -1px 2px 0px #ccc;
+}

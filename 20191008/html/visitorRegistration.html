@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+
+<html>
+
+	<head>
+		<title>访客登记</title>
+		<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+		<link rel="stylesheet" href="../css/fonts/iconfont.css">
+		<link href="../css/publicCss/demo.css" rel="stylesheet" type="text/css" />
+		<link href="../css/visitorRegistration.css" rel="stylesheet" type="text/css" />
+		<link href="../css/publicCss/skin.css" rel="stylesheet" type="text/css" />
+		<script src="../scripts/jquery.min.js"></script>
+		<script src="../scripts/boot.js" type="text/javascript"></script>
+		<script src="../scripts/miniui/TreeSelectWindow.js" type="text/javascript"></script>
+	</head>
+
+	<body>
+		<div class="visitor-box" id="visitorInfo">
+			<h1 class="title-box">来访人信息</h1>
+			<div class="content-box">
+				<table border="0" cellpadding="1" cellspacing="2" style="">
+					<tr>
+						<td>姓名：</td>
+						<td>
+							<input id="Name" name="VisitorName" readonly class="mini-textbox" required="true"/>
+						</td>
+					</tr>
+					<tr>
+						<td>身份证号：</td>
+						<td>
+							<input class="mini-textbox" id="ID" readonly name="IDCard" required="true" />
+						</td>
+					</tr>
+					<tr>
+						<td>手机号码：</td>
+						<td>
+							<input class="mini-textbox" name="PhoneNumber" vtype="maxLength:11" />
+						</td>
+					</tr>
+					<tr>
+						<td>车牌号码：</td>
+						<td>
+							<input id="pwd1" name="Pwd" class="mini-textbox" />
+						</td>
+					</tr>
+				</table>
+				<div class="picture-box" onclick="getID()">
+					<img class="picture-src" src="../img/defPic.png" height=148 />
+					<div>身份证读取的照片</div>
+				</div>
+				<div class="picture-box take-photo" onclick="takePhoto()">
+					<img src="../img/camera.png" id="takePic" height=148 />
+					<div>点击开始拍照</div>
+				</div>
+			</div>
+		</div>
+		<div class="interviewed-box">
+			<h1 class="title-box">被访人信息</h1>
+			<div class="content-box">
+				<table border="0" cellpadding="1" cellspacing="2">
+					<tr>
+						<td>姓名：</td>
+						<td>
+							<input id="btnEdit1" name="VisitedUserName" class="mini-buttonedit" onbuttonclick="onButtonEdit" />
+						</td>
+						<td>备注：</td>
+						<td style="padding-top: 20px;">
+							<input id="textarea1" name="Reason" class="mini-textarea" />
+						</td>
+					</tr>
+				</table>
+			</div>
+		</div>
+		<div class="button-box">
+			<span class="cancel-btn" onclick="closeWin()">取消</span>
+			<span class="confirm-btn add-visitor" onclick="GetPicName();">确定</span>
+		</div>
+		<div id="cameraWin" class="mini-window" title="拍照" style="min-width:500px;">
+			<img width="100%" class="img-face" src='../img/camera.png'/> 
+			<div class="button-box" style="margin: 13px;border-top: 1px solid #ccc;padding: 20px;">
+				<span class="cancel-btn" onclick="closeCameraWin()">取消</span>
+				<span class="confirm-btn" onclick="SavePictrue();">拍照</span>
+			</div>
+		</div>
+		<div id="interviewedBox" class="mini-window" title="选择被访人" style="min-width:600px;height:500px;">
+			<div class="mini-splitter" style="width:100%;height:100%;">
+				<div size="250" showCollapseButton="true">
+					<table style="width:100%;border-bottom: 1px solid #aed0ea;margin-bottom: 4px;">
+						<tr>
+							<td style="white-space:nowrap;">
+								<input id="key" class="mini-textbox" emptyText="请输入关键字" style="width:150px;" onenter="onKeyEnter" />
+								<a class="mini-button" onclick="searchDept()">查询</a>
+							</td>
+						</tr>
+					</table>
+					<div class="mini-fit">
+						<ul id="treeMini" class="mini-tree" url="http://cloudpark.it-wy.cn:5002/UserBindPerGroup/GetBuildingUnitList" style="width:200px;padding:5px;" showTreeIcon="true" textField="text" idField="id" parentField="pid" expandOnLoad="true" resultAsTree="false" allowDrop="true" onnodeselect="nodeselect" ondrawnode="onDrawNode">
+						</ul>
+					</div>
+				</div>
+				<div showCollapseButton="true">
+					<div class="mini-fit">
+						<table style="width:100%;">
+							<tr>
+								<td style="white-space:nowrap;">
+									<input id="keyUser" class="mini-textbox" emptyText="请输入姓名" style="width:150px;" onenter="onKeyUserEnter" />
+									<a class="mini-button" onclick="searchUser()">查询</a>
+								</td>
+							</tr>
+						</table>
+						<div id="datagrid1" emptyText="数据为空" class="mini-datagrid" style="width:100%;height:calc(100% - 90px);" url="http://cloudpark.it-wy.cn:5002/UserBindPerGroup/GetUserList" idField="id" allowResize="true" showPager="false" pageSize="100">
+							<div property="columns">
+								<div field="Name" width="100" headerAlign="center" align="center" allowSort="true" property="filter">
+									用户姓名
+								</div>
+							</div>
+						</div>
+						<div style="text-align: center;padding: 10px;">
+							<a class="mini-button" iconCls="icon-cancel" onclick="closeWin()">取消</a>
+							<a class="mini-button" iconCls="icon-ok" onclick="getSelecteds()">确定</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script type="text/javascript">
+			mini.parse();
+			var dataObj = {};
+			dataObj.status = false; 
+			var ImageName,projectID;
+			projectID = sessionStorage.getItem('projectid');
+			var interviewedInfo = mini.get('interviewedBox');
+			var cameraWin = mini.get('cameraWin');
+			var deptTree = mini.get('treeMini');
+			var userGrid = mini.get("datagrid1");
+			var visited = mini.get('btnEdit1');
+			// getID();
+			if(dataObj.status){
+				stopCamera();
+			}
+			//获取身份证信息
+			function getID() {
+				$.ajax({
+					url: 'http://127.0.0.1:88/GetID',
+					type: "POST",
+					success: function(res) {
+						if(res.success) {
+							var info=res.IDInfo;
+							mini.get("Name").setValue(info.Name);
+							mini.get("ID").setValue(info.ID);
+//							$('').attr('readonly',true)
+							$('.picture-src').attr('src',"data:image/png;base64,"+info.Picture);
+						} else {
+							mini.showTips({
+								content: res.msg,
+								state: 'danger',
+							});
+						}
+					},
+					error:function(err){
+						mini.showTips({
+							content: '接口访问失败',
+							state: 'danger',
+						});
+					}
+				})
+			}
+			//
+			function SavePictrue(){
+				dataObj.cameraFace = $('.img-face')[0].src;
+				$('.takePic').attr('src',dataObj.cameraFace);
+				closeCameraWin();
+			}			
+			//打开摄像头
+			function takePhoto() {
+				$.ajax({
+				    url:'http://127.0.0.1:88/StartCamera',
+				    type:'post',
+				    success:function(res){
+				    	if(res.success) {
+							startWS();
+							dataObj.status=true;
+							cameraWin.show();
+						} else {
+							mini.showTips({
+								content: res.msg,
+								state: 'danger',
+							});
+						}
+				    },
+				    error: function(err){
+				    	mini.showTips({
+							content: '接口访问失败',
+							state: 'danger',
+						});
+				    }
+				});
+				}
+			//关闭摄像头
+			function stopCamera(){
+				$.ajax({
+				    url:'http://127.0.0.1:88/StopCamera',
+				    type:'post',
+				    success:function(res){
+						stopWS();
+				    },
+				    error: function(err){
+				    	console.log(err);
+				    }
+				});
+			}
+			//开启Ws服务
+			function startWS() {
+				$.ajax({
+					url:'http://127.0.0.1:88/StartWS',
+					type:'post',
+					success:function(res){
+						socket();
+					},
+					error: function(err){
+						console.log(err);
+					}
+				});
+			}
+			//停止WS服务
+			function stopWS(){
+				$.ajax({
+				    url:'http://127.0.0.1:88/StopWS',
+				    type:'post',
+				    success:function(res){
+				    },
+				    error: function(err){
+				    	console.log(err);
+				    }
+				});
+			} 
+			//连接websocket服务
+			function socket(){
+				if("WebSocket" in window) {
+					// 打开一个 web socket
+					var ws = new WebSocket("ws://127.0.0.1:13322");
+					ws.onopen = function(event) {
+					  console.log("WebSocket is open now.");
+					};
+
+					ws.onmessage = function(evt) {
+						var received_msg = evt.data;
+						$('.img-face').attr('src',"data:image/png;base64,"+received_msg); //收到图片
+					};
+
+					ws.onclose = function() {
+						stopCamera();  //关闭摄像头及关闭关闭WS
+					};
+				} else {
+					// 浏览器不支持 WebSocket
+					alert("您的浏览器不支持 WebSocket!");
+				}
+			}
+			// 新增访客
+			function addVisitor() {
+				loading();
+				var form = new mini.Form("#visitorInfo");
+				var Reason = mini.get('textarea1').getValue();
+				var data = form.getData(); //获取表单多个控件的数据
+				dataObj.AuthorizeTime = new Date();
+				dataObj.AuthorizeTime = dataObj.AuthorizeTime.toLocaleString();
+				//var json = mini.encode(data); //序列化成JSON
+				$.ajax({
+					type: "post",
+					url: "http://cloudpark.it-wy.cn:5002/WeChat/AddVisitor",
+					data: {
+						VisitedUserName: dataObj.VisitedUserName,
+						ImageName: ImageName,
+						VisitorModel: {
+							ID: uuid(),
+							ProjectID: projectID,
+							VisitorName: data.VisitorName,
+							VisitedUserID: 'a0364fe7-e1b1-4526-8e0d-e7d5700efa14',
+							AuthorizedType: 1,
+							AuthorizeTime: dataObj.AuthorizeTime,
+							EffectiveTime: dataObj.AuthorizeTime,
+							AllowPassCount: 1,
+							PassedCount: 1,
+							PhoneNumber: data.PhoneNumber,
+							IDCard: data.IDCard,
+							Address: '1',
+							Reason: Reason,
+							VisitedUserName: dataObj.VisitedUserName
+						},
+					},
+					success: function(res) {
+						mini.unmask(document.body);
+						if(res.Status) {
+							mini.showTips({
+								content: '保存成功',
+								state: 'success',
+								timeout: 3000
+							});
+							window.location.reload();
+						} else {
+							mini.showTips({
+								content: res.Msg,
+								state: 'danger',
+								timeout: 3000
+							});
+						}
+					}
+				});
+			}
+			// 获取被访人弹框树形图
+			function onButtonEdit(e) {
+				var buttonEdit = e.sender;
+				interviewedInfo.show();
+				deptTree.load({
+					projectId: projectID
+				}, function(res) {
+					deptTree.select(0);
+					//获取用户绑定
+					GetUserList();
+				})
+			}
+			//默认获取项目下所有用户
+			function GetUserList() {
+				var param = numIsId();
+				userGrid.load(param)
+			}
+			//房间点击触发加载用户事件
+			function nodeselect(e) {
+				if(!e.node) return false;
+				var objId = numIsId(e.node._level, e.node.id);
+				var data = {
+					ProjectId: projectID
+				};
+				var param = $.extend(data, objId);
+				userGrid.load(param);
+			}
+			//选取被访人
+			function getSelecteds() {
+				var rows = userGrid.getSelecteds();
+				if(rows[0]) {
+					dataObj.VisitedUserName = rows[0].Name;
+					visited.setValue(rows[0]);
+					visited.setText(dataObj.VisitedUserName);
+				}
+				interviewedInfo.hide();
+			}
+			//根据等级判断传什么id
+			function numIsId() {
+				var selected = deptTree.getSelected();
+				var num = selected._level;
+				var id = selected.id;
+				if(!id) {
+					return {
+						ProjectID: projectID
+					}
+				}
+				var param = {};
+				switch(num) {
+					case 0:
+						param.BuildingID = id;
+						break;
+					case 1:
+						param.UnitID = id;
+						break;
+						return {
+							UnitID: id
+						};
+					case 2:
+						param.FloorID = id;
+						break;
+					case 3:
+						param.RoomID = id;
+						break;
+				}
+				param.ProjectID = projectID;
+				return param;
+			}
+			//自定义树节点图标
+			function onDrawNode(e) {
+				var node = e.node;
+				if(node._level === 0) {
+					e.iconCls = "iconfont icon-dongka";
+				} else if(node._level === 1) {
+					e.iconCls = "iconfont icon-danyuan";
+				} else if(node._level === 2) {
+					e.iconCls = "iconfont icon-94loucengdaohang-1";
+				} else if(node._level === 3) {
+					e.iconCls = "iconfont icon-fangjian";
+				}
+			}
+			// 搜索
+			function searchDept() {
+				var key = mini.get("key").getValue();
+				if(key == "") {
+					deptTree.clearFilter();
+				} else {
+					key = key.toLowerCase();
+					deptTree.filter(function(node) {
+						var text = node.text ? node.text.toLowerCase() : "";
+						if(text.indexOf(key) != -1) {
+							return true;
+						}
+					});
+				}
+			}
+				function searchUser() {
+					var key = mini.get("keyUser").getValue();
+					var param = numIsId();
+					param.Name = key;
+					userGrid.load(param)
+				}
+			// 回车
+			function onKeyEnter(e) {
+				searchDept();
+			}
+				function onKeyUserEnter(e) {
+					searchUser();
+				}
+			//关闭
+			$('#cameraWin .mini-tools-close ').click(function(){  //关闭按钮
+				closeCameraWin();
+			})
+			function closeCameraWin() {
+				stopCamera();
+				cameraWin.hide();
+			}
+				function closeWin() {
+					interviewedInfo.hide();
+				}
+			//加载中
+			function loading() {
+				mini.mask({
+					el: document.body,
+					cls: 'mini-mask-loading',
+					html: '加载中...'
+				});
+			}
+		function GetPicName() {
+			var picBase64Str = $(".picture-src").attr("src");
+			picBase64Str = picBase64Str.substr(picBase64Str.indexOf(",") + 1, picBase64Str.length);
+			if(picBase64Str=="../img/defPic.png"){
+				picBase64Str=$('#takePic').attr("src");
+			}
+			$.ajax({
+				url: "http://cloudpark.it-wy.cn:5002/UserBindPerGroup/SavePicture",
+				type: "POST",
+				data: {
+					projectId:projectID,
+					picBase64Str: picBase64Str
+				},
+				success: function(data) {
+					if(!data.Status) {
+						mini.showTips({
+							content: res.Msg,
+							state: 'danger',
+							timeout: 3000
+						});
+						$('.add-visitor').attr('disabled', true);
+						return;
+					} else {
+						ImageName = data.Data; //获取到图片的名字
+						addVisitor();
+						$(".add-visitor").removeAttr('disabled');
+					}
+				},
+			});
+		}
+		function uuid() {
+    var s = [];
+    var hexDigits = "0123456789abcdef";
+    for (var i = 0; i < 36; i++) {
+        s[i] = hexDigits.substr(Math.floor(Math.random() * 0x10), 1);
+    }
+    s[14] = "4";  // bits 12-15 of the time_hi_and_version field to 0010
+    s[19] = hexDigits.substr((s[19] & 0x3) | 0x8, 1);  // bits 6-7 of the clock_seq_hi_and_reserved to 01
+    s[8] = s[13] = s[18] = s[23] = "-";
+ 
+    var uuid = s.join("");
+    return uuid;
+}
+		</script>
+	</body>
+
+</html>

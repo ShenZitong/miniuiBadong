@@ -1,0 +1,28 @@
+****************************日志信息****************************
+【出现时间】：2019/10/16 9:02:35
+【日志描述】：处理请求出错
+【详细信息】：rawUrl: /StartCamera
+【异常类型】：NullReferenceException
+【异常信息】：Object reference not set to an instance of an object.
+【堆栈调用】：   at CameraOper.Camera.OpenDevice() in C:\Users\private\Desktop\UtilServer\CameraOper\Camera.cs:line 79
+   at CameraOper.Camera.StartVedio() in C:\Users\private\Desktop\UtilServer\CameraOper\Camera.cs:line 32
+   at UtilServer.IDReaderAPI.HttpServer_NewQueryEvent(String rawUrl, HttpListenerContext context) in C:\Users\private\Desktop\UtilServer\UtilServer\IDReaderAPI.cs:line 191
+   at UtilServer.HttpServer.HandleRequest(Object ctx) in C:\Users\private\Desktop\UtilServer\UtilServer\HttpServer.cs:line 184
+【内部异常】：
+【内部堆栈】：
+***************************************************************
+
+****************************日志信息****************************
+【出现时间】：2019/10/16 9:03:09
+【日志描述】：处理请求出错
+【详细信息】：rawUrl: /StartCamera
+【异常类型】：NullReferenceException
+【异常信息】：Object reference not set to an instance of an object.
+【堆栈调用】：   at CameraOper.Camera.OpenDevice() in C:\Users\private\Desktop\UtilServer\CameraOper\Camera.cs:line 79
+   at CameraOper.Camera.StartVedio() in C:\Users\private\Desktop\UtilServer\CameraOper\Camera.cs:line 32
+   at UtilServer.IDReaderAPI.HttpServer_NewQueryEvent(String rawUrl, HttpListenerContext context) in C:\Users\private\Desktop\UtilServer\UtilServer\IDReaderAPI.cs:line 191
+   at UtilServer.HttpServer.HandleRequest(Object ctx) in C:\Users\private\Desktop\UtilServer\UtilServer\HttpServer.cs:line 184
+【内部异常】：
+【内部堆栈】：
+***************************************************************
+

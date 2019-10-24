@@ -1,0 +1,19 @@
+﻿[
+	{ "id": "1", iconCls: "iconfont icon-renyuan", text: "部门人员", url: "html/departmentPersonnel.html" 
+	},
+    { "id": "xtgl", iconCls: "iconfont icon-fangkedengji", text: "访客登记",url: "html/visitorRegistration.html" 
+    },
+    { "id": "sjgl", iconCls: "iconfont icon-dengjijilu", text: "访客登记记录", url: "html/registrationRecord.html" 
+    },
+{ "id": "dwzz", iconCls: "iconfont icon-tonghangjilu",  text: "访客通行记录", url: "html/trafficRecord.html" 
+},
+//{ "id": "bdzx", iconCls: "iconfont icon-tonghangjilu", text: "访客车辆通行记录", url: "html/vehicleTrafficRecord.html" 
+//},
+//{ "id": "ydgl", iconCls: "fa fa-android", text: "移动管理", children: [
+//      { "id": "wxgl", iconCls: "fa fa-weixin", text: "微信管理", children: [
+//              { "id": "qyhsz", iconCls: "fa fa-plug", text: "企业号设置", url: "pages/1.html" }
+//          ]
+//      }
+//  ]
+//}
+]
