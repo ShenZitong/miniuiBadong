@@ -12,6 +12,7 @@
     }    
     </style>      
     <script src="../scripts/boot.js" type="text/javascript"></script>
+    <script src="../js/publicValue.js" type="text/javascript"></script>
 </head>
 <body>   
 <div class="mini-splitter" style="width:100%;height:100%;">
@@ -27,7 +28,7 @@
         <div class="mini-fit">
             <ul id="tree1" 
             	class="mini-tree" 
-            	url="http://cloud.it-wy.cn:8082/Dept/GetAllDept" style="width:100%;"
+            	url="http://49.232.26.220:9999/Dept/GetAllDept" style="width:100%;"
                 showTreeIcon="true" 
                 textField="Name" 
                 idField="ID" 
@@ -47,14 +48,15 @@
         <div class="mini-toolbar" style="padding:2px;border-top:0;border-left:0;border-right:0;">         	
             <a class="mini-button" iconCls="icon-add" plain="true" onclick="addRow()">新增</a>
             <!--<a class="mini-button" iconCls="icon-remove" plain="true" onclick="removeRow()">删除</a>-->                            
-            <a class="mini-button" iconCls="icon-save" plain="true" onclick="saveDept()">保存</a>
+            <a class="mini-button" iconCls="icon-save" plain="true" onclick="saveData()">保存</a>
             <span class="separator"></span>  
             <a class="mini-button" iconCls="iconfont icon-shuaxin" plain="true" onclick="reload()">刷新</a>
         </div>
         <div class="mini-fit" >
             <div id="grid1" class="mini-datagrid" style="width:100%;height:100%;" 
                 borderStyle="border:0;"
-                url="http://cloud.it-wy.cn:8082/Users/GetUser"
+                showPager="false"
+                url="http://49.232.26.220:9999/Users/GetUser"
                 allowResize="true"
                 showFilterRow="true" 
                 allowCellSelect="true" 
@@ -64,21 +66,21 @@
                 allowCellSelect="true" 
                 multiSelect="true" 
     			editNextOnEnterKey="true"
-    			sizeList="[20,30,50,100]" 
-    			pageSize="20"
+    			pageSize="1000"
     			showPageIndex="true" 
     			showPageSize="true"
+    			
             >
                 <div property="columns">            
                     <div headerAlign="center" align="center" field="Name" width="120" allowSort="true" renderer="IsNull">用户姓名
         				<input id="Name" property="filter" class="mini-textbox" onvaluechanged="onNameFilterChanged" style="width:100%;" />
         				<input property="editor" class="mini-textbox" style="width:100%;" minWidth="200" />
                     </div>      
-                    <div headerAlign="center" align="center" field="Password" width="120" allowSort="true" renderer="IsNull">用户密码 
+                    <div headerAlign="center" align="center" field="Password" width="120" allowSort="true" renderer="IsNull" >用户密码 
                     	<input property="editor" class="mini-textbox" style="width:100%;" minWidth="200" />
                     </div>                
                     <div align="center" headerAlign="center" field="SpaceQty" width="100" allowSort="true" renderer="IsNull">最大车位数
-                    	<input property="editor" class="mini-textbox" style="width:100%;" minWidth="200" />
+                    	<input property="editor" class="mini-Spinner" style="width:100%;" minWidth="200" />
                     </div>            
                     <div align="center" headerAlign="center" field="Tel" width="100" allowSort="true" renderer="IsNull">电话号码
                         <input id="Tel" property="filter" class="mini-textbox" onvaluechanged="onNameFilterChanged" style="width:100%;" />
@@ -88,7 +90,7 @@
                     	<input property="editor" class="mini-textbox" style="width:100%;" minWidth="200" />
                     </div>
                     <div align="center" headerAlign="center" field="StoredValue" width="100" allowSort="true" renderer="IsNull">储值余额
-                    	<input property="editor" class="mini-textbox" style="width:100%;" minWidth="200" />
+                    	<input property="editor" class="mini-Spinner" style="width:100%;" minWidth="200" />
                     </div>
                     <div type="comboboxcolumn" autoShowPopup="true" align="center" headerAlign="center" field="OverSpaceNormalIn" width="100" allowSort="true" renderer="onGenderRenderer">超车位正常进入
                     <input property="editor" class="mini-combobox" style="width:100%;" minWidth="200" data="OverSpaceNormalIn"/>
@@ -126,13 +128,15 @@
 				grid.setTotalCount(res.result.count);
 			})
 		}
+		
         tree.on("nodeselect", function (e) {  //切换树级菜单时
         	deptId = e.node.ID;
             if (e.isLeaf) {
                 grid.load({ 
-                	ProjectID: e.node.ProjectID,
+                	ProjectID: projectId,
                 	DeptID:e.node.ID,
                 },function(res){
+                	grid.setTotalCount(res.result.count);
                 });
             } else {
                 grid.setData([]);
@@ -146,10 +150,11 @@
         function addDept(){
         	var node = tree.getSelectedNode();
             var newNode = {};
-            tree.addNode(newNode, "add", node);
-            tree.selectNode(newNode);
-            tree.updateNode(newNode,{Name: "输入部门名称.."})
-            tree.beginEdit(newNode);
+        		tree.addNode(newNode, "add", node);
+	            tree.selectNode(newNode);
+	            tree.updateNode(newNode,{Name: "输入部门名称.."})
+	            tree.beginEdit(newNode);
+
         }
         //取消选中
         function deselectDept(){
@@ -158,6 +163,8 @@
 				ProjectID: projectId,
 				DeptID:'',
 				Name:''
+			},function(res){
+				grid.setTotalCount(res.result.count);
 			})
         }
    		function removeDept(){  //删除部门(树状)
@@ -173,7 +180,7 @@
 		        function (action) {
 		            if (action == "ok") {
 			   			$.ajax({
-			   				url:'http://cloud.it-wy.cn:8082/Dept/Delete',
+			   				url:PublicUrlCloud + 'Dept/Delete',
 			   				type:'post',
 			   				data:{
 			   					Id:node.ID,
@@ -221,7 +228,7 @@
 		            if (action == "ok") {
 			        	$.ajax({
 			        		type:'post',
-			        		url:'http://cloud.it-wy.cn:8082/Dept/AddorUpdate',
+			        		url:PublicUrlCloud + 'Dept/AddorUpdate',
 			        		async:true,
 			        		data:dept,
 			        		success:function(res){
@@ -276,7 +283,7 @@
 		        function (action) {
 		            if (action == "ok") {
                     	$.ajax({
-			        		url:'http://cloud.it-wy.cn:8082/Users/Delete',
+			        		url:PublicUrlCloud + 'Users/Delete',
 			        		type:'post',
 			        		data:{
 			        			Id:id,
@@ -309,6 +316,7 @@
             	ProjectID: e.node.ProjectID,
             	DeptID:e.node.ID,
             },function(res){
+            	grid.setTotalCount(res.result.count);
             });
         }
         function onNameFilterChanged(e) { //搜索用户时
@@ -330,7 +338,9 @@
             }else{
             	data.Name=key;
             }           
-            grid.load(data);
+            grid.load(data,function(res){
+            	grid.setTotalCount(res.result.count);
+            });
         }
 
         function removeRow() {
@@ -341,7 +351,7 @@
             		return false;
             	}
             	$.ajax({
-            		url:'http://cloud.it-wy.cn:8082/Users/Delete',
+            		url:PublicUrlCloud + 'Users/Delete',
             		type:'post',
             		data:{
             			Id:rows[0].ID,
@@ -373,10 +383,19 @@
             }
         }
         function saveData() {
+        	debugger
         	grid.loading("保存中，请稍后......");
             var data = grid.getChanges();
             var dataEach={};
             for(var i=0;i<data.length;i++){
+            	if(!data[i].Name||!data[i].Password){
+	    			mini.showTips({
+						content: '用户名和密码为必填!',
+						state: 'danger',
+					});
+					grid.unmask();
+					return false;
+            	}
             	var len=false;
             	data[i].DeptID=deptId;
             	data[i].ProjectID=projectId;
@@ -391,7 +410,7 @@
         } 
         function addorUpdate(dataEach,len){
         	$.ajax({
-                url: 'http://cloud.it-wy.cn:8082/Users/AddorUpdate',
+                url: PublicUrlCloud + 'Users/AddorUpdate',
                 data: dataEach,
                 type: "post",
                 success: function (text) {

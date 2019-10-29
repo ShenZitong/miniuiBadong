@@ -21,7 +21,7 @@ $(function() {
 			layer.tips('密码不能为空', '.psd-inp');
 		} else {
 			$.ajax({
-				url: 'http://cloud.it-wy.cn:8082/Login/LoginCheck',
+				url: PublicUrlCloud + 'Login/LoginCheck',
 				type: 'post',
 				data: {
 					Account: userName,
@@ -52,7 +52,8 @@ $(function() {
 								sessionStorage.setItem('pageName', "");
 								sessionStorage.setItem('loginStatus', isLogin);
 								layer.close(pageLoad);
-								location.href = 'home.html';
+								layer.tips('请用项目账号登录!', '.login-btn');
+//								location.href = 'home.html';
 							} else {
 								if(type !== "财务管理员") {
 									if(type !== "商户管理员") {
@@ -89,7 +90,7 @@ $(function() {
 								sessionStorage.setItem('RemindList', JSON.stringify(JSON.parse(userData).remindList));
 								layer.close(pageLoad);
 								if(projectId){
-									location.href = 'home.html';
+									location.href = 'html/home.html';
 								}else{
 									layer.tips('请用项目账号登录!', '.login-btn');
 								}

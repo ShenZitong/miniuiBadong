@@ -11,6 +11,7 @@
 		<link href="../css/publicCss/skin.css" rel="stylesheet" type="text/css" />
 		<script src="../scripts/jquery.min.js"></script>
 		<script src="../scripts/boot.js" type="text/javascript"></script>
+		<script src="../js/publicValue.js" type="text/javascript"></script>
 		<script src="../scripts/miniui/TreeSelectWindow.js" type="text/javascript"></script>
 	</head>
 
@@ -22,13 +23,13 @@
 					<tr>
 						<td>姓名：</td>
 						<td>
-							<input id="Name" name="VisitorName" readonly class="mini-textbox" required="true"/>
+							<input id="Name" name="VisitorName" class="mini-textbox readonly-box" required="true"/>
 						</td>
 					</tr>
 					<tr>
 						<td>身份证号：</td>
 						<td>
-							<input class="mini-textbox" id="ID" readonly name="IDCard" required="true" />
+							<input class="mini-textbox readonly-box" id="ID" name="IDCard" required="true" />
 						</td>
 					</tr>
 					<tr>
@@ -45,11 +46,11 @@
 					</tr>
 				</table>
 				<div class="picture-box" onclick="getID()">
-					<img class="picture-src" src="../img/defPic.png" height=148 />
+					<img class="picture-src" src="../img/defPic.png" />
 					<div>身份证读取的照片</div>
 				</div>
 				<div class="picture-box take-photo" onclick="takePhoto()">
-					<img src="../img/camera.png" id="takePic" height=148 />
+					<img src="../img/camera.png" id="takePic" />
 					<div>点击开始拍照</div>
 				</div>
 			</div>
@@ -94,7 +95,7 @@
 						</tr>
 					</table>
 					<div class="mini-fit">
-						<ul id="treeMini" class="mini-tree" url="http://cloudpark.it-wy.cn:5002/UserBindPerGroup/GetBuildingUnitList" style="width:200px;padding:5px;" showTreeIcon="true" textField="text" idField="id" parentField="pid" expandOnLoad="true" resultAsTree="false" allowDrop="true" onnodeselect="nodeselect" ondrawnode="onDrawNode">
+						<ul id="treeMini" class="mini-tree" url="http://49.232.26.220:9998/UserBindPerGroup/GetBuildingUnitList" style="width:200px;padding:5px;" showTreeIcon="true" textField="text" idField="id" parentField="pid" expandOnLoad="true" resultAsTree="false" allowDrop="true" onnodeselect="nodeselect" ondrawnode="onDrawNode">
 						</ul>
 					</div>
 				</div>
@@ -108,7 +109,7 @@
 								</td>
 							</tr>
 						</table>
-						<div id="datagrid1" emptyText="数据为空" class="mini-datagrid" style="width:100%;height:calc(100% - 90px);" url="http://cloudpark.it-wy.cn:5002/UserBindPerGroup/GetUserList" idField="id" allowResize="true" showPager="false" pageSize="100">
+						<div id="datagrid1" emptyText="数据为空" class="mini-datagrid" style="width:100%;height:calc(100% - 90px);" url="http://49.232.26.220:9998/UserBindPerGroup/GetUserList" idField="id" allowResize="true" showPager="false" pageSize="100">
 							<div property="columns">
 								<div field="Name" width="100" headerAlign="center" align="center" allowSort="true" property="filter">
 									用户姓名
@@ -148,7 +149,8 @@
 							var info=res.IDInfo;
 							mini.get("Name").setValue(info.Name);
 							mini.get("ID").setValue(info.ID);
-//							$('').attr('readonly',true)
+							mini.get("Name").setReadOnly('readonly','true')
+							mini.get("ID").setReadOnly('readonly','true')
 							$('.picture-src').attr('src',"data:image/png;base64,"+info.Picture);
 						} else {
 							mini.showTips({
@@ -168,7 +170,8 @@
 			//
 			function SavePictrue(){
 				dataObj.cameraFace = $('.img-face')[0].src;
-				$('.takePic').attr('src',dataObj.cameraFace);
+				$('#takePic').attr('src',dataObj.cameraFace);
+				$('#takePic').css('width','200px');
 				closeCameraWin();
 			}			
 			//打开摄像头
@@ -263,11 +266,15 @@
 				var Reason = mini.get('textarea1').getValue();
 				var data = form.getData(); //获取表单多个控件的数据
 				dataObj.AuthorizeTime = new Date();
+				debugger
+				dataObj.EffectiveTime = tomorrow();
+				dataObj.EffectiveTime = dataObj.EffectiveTime.toLocaleString()
 				dataObj.AuthorizeTime = dataObj.AuthorizeTime.toLocaleString();
+				debugger
 				//var json = mini.encode(data); //序列化成JSON
 				$.ajax({
 					type: "post",
-					url: "http://cloudpark.it-wy.cn:5002/WeChat/AddVisitor",
+					url: PublicUrlAccess+"/WeChat/AddVisitor",
 					data: {
 						VisitedUserName: dataObj.VisitedUserName,
 						ImageName: ImageName,
@@ -275,10 +282,10 @@
 							ID: uuid(),
 							ProjectID: projectID,
 							VisitorName: data.VisitorName,
-							VisitedUserID: 'a0364fe7-e1b1-4526-8e0d-e7d5700efa14',
+							VisitedUserID: dataObj.VisitedUserID,
 							AuthorizedType: 1,
 							AuthorizeTime: dataObj.AuthorizeTime,
-							EffectiveTime: dataObj.AuthorizeTime,
+							EffectiveTime: dataObj.EffectiveTime,
 							AllowPassCount: 1,
 							PassedCount: 1,
 							PhoneNumber: data.PhoneNumber,
@@ -338,6 +345,7 @@
 			function getSelecteds() {
 				var rows = userGrid.getSelecteds();
 				if(rows[0]) {
+					dataObj.VisitedUserID = rows[0].ID;
 					dataObj.VisitedUserName = rows[0].Name;
 					visited.setValue(rows[0]);
 					visited.setText(dataObj.VisitedUserName);
@@ -442,7 +450,7 @@
 				picBase64Str=$('#takePic').attr("src");
 			}
 			$.ajax({
-				url: "http://cloudpark.it-wy.cn:5002/UserBindPerGroup/SavePicture",
+				url: PublicUrlAccess+"/UserBindPerGroup/SavePicture",
 				type: "POST",
 				data: {
 					projectId:projectID,
@@ -466,18 +474,27 @@
 			});
 		}
 		function uuid() {
-    var s = [];
-    var hexDigits = "0123456789abcdef";
-    for (var i = 0; i < 36; i++) {
-        s[i] = hexDigits.substr(Math.floor(Math.random() * 0x10), 1);
-    }
-    s[14] = "4";  // bits 12-15 of the time_hi_and_version field to 0010
-    s[19] = hexDigits.substr((s[19] & 0x3) | 0x8, 1);  // bits 6-7 of the clock_seq_hi_and_reserved to 01
-    s[8] = s[13] = s[18] = s[23] = "-";
- 
-    var uuid = s.join("");
-    return uuid;
-}
+		    var s = [];
+		    var hexDigits = "0123456789abcdef";
+		    for (var i = 0; i < 36; i++) {
+		        s[i] = hexDigits.substr(Math.floor(Math.random() * 0x10), 1);
+		    }
+		    s[14] = "4";  // bits 12-15 of the time_hi_and_version field to 0010
+		    s[19] = hexDigits.substr((s[19] & 0x3) | 0x8, 1);  // bits 6-7 of the clock_seq_hi_and_reserved to 01
+		    s[8] = s[13] = s[18] = s[23] = "-";
+		 
+		    var uuid = s.join("");
+		    return uuid;
+		}
+
+		function tomorrow(){
+			var dd = new Date(); 
+		        // 将当前日期
+			dd.setDate(dd.getDate()+1);
+		        // 设置时 分 秒 毫秒
+			dd.setHours(0, 0, 0, 0);
+			return dd;
+		}
 		</script>
 	</body>
 
