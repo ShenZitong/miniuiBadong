@@ -35,13 +35,13 @@
 					<tr>
 						<td>手机号码：</td>
 						<td>
-							<input class="mini-textbox" name="PhoneNumber" vtype="maxLength:11" />
+							<input id='phoneNumber' class="mini-textbox" name="PhoneNumber" vtype="maxLength:11" />
 						</td>
 					</tr>
-					<tr>
+					<tr style="display: none;">
 						<td>车牌号码：</td>
 						<td>
-							<input id="pwd1" name="Pwd" class="mini-textbox" />
+							<input id="pwd1" name="Pwd" class="mini-textbox"/>
 						</td>
 					</tr>
 				</table>
@@ -64,16 +64,35 @@
 						<td>
 							<input id="btnEdit1" name="VisitedUserName" class="mini-buttonedit" onbuttonclick="onButtonEdit" />
 						</td>
-						<td>备注：</td>
-						<td style="padding-top: 20px;">
-							<input id="textarea1" name="Reason" class="mini-textarea" />
+						<td>授权类型：</td>
+						<td>
+							<!--<input class="mini-combobox" style="width:200px;"/>-->
+							<input id="AuthorizedType" name="AuthorizedType" class="mini-combobox" value="时间和次数" textField="text" valueField="id"  data='[{text: "时间和次数",id: 1},{text: "时间",id: 2},{text: "次数",id: 3}]'/>
 						</td>
 					</tr>
+					<tr>
+		                <td>有效时间：</td>
+		                <td>
+		                    <input id="EffectiveTime" name="EffectiveTime" class="mini-datepicker" emptytext="选择有效时间" minDate="new Date()"
+		                           format="yyyy-MM-dd H:mm:ss" timeFormat="H:mm:ss" showTime="true" allowInput="false" showOkButton="true" />
+		                </td>
+		                <td>允许次数：</td>
+		                <td>
+		                	<input id="AllowPassCount" name="AllowPassCount" class="mini-spinner" value="1" minValue="1" maxValue="99999" />
+		                
+		                </td>	
+		            </tr>
+		            <tr>
+	                	<td>来访原因：</td>
+						<td style="padding-top: 20px;">
+							<input id="textarea1" name="Reason" class="mini-textarea" />
+						</td>	
+		            </tr>
 				</table>
 			</div>
 		</div>
 		<div class="button-box">
-			<span class="cancel-btn" onclick="closeWin()">取消</span>
+			<span class="cancel-btn" onclick="reloadBtn()">取消</span>
 			<span class="confirm-btn add-visitor" onclick="GetPicName();">确定</span>
 		</div>
 		<div id="cameraWin" class="mini-window" title="拍照" style="min-width:500px;">
@@ -95,7 +114,7 @@
 						</tr>
 					</table>
 					<div class="mini-fit">
-						<ul id="treeMini" class="mini-tree" url="http://49.232.26.220:9998/UserBindPerGroup/GetBuildingUnitList" style="width:200px;padding:5px;" showTreeIcon="true" textField="text" idField="id" parentField="pid" expandOnLoad="true" resultAsTree="false" allowDrop="true" onnodeselect="nodeselect" ondrawnode="onDrawNode">
+						<ul id="treeMini" class="mini-tree" style="width:200px;padding:5px;" showTreeIcon="true" textField="text" idField="id" parentField="pid" expandOnLoad="true" resultAsTree="false" allowDrop="true" onnodeselect="nodeselect" ondrawnode="onDrawNode">
 						</ul>
 					</div>
 				</div>
@@ -109,7 +128,7 @@
 								</td>
 							</tr>
 						</table>
-						<div id="datagrid1" emptyText="数据为空" class="mini-datagrid" style="width:100%;height:calc(100% - 90px);" url="http://49.232.26.220:9998/UserBindPerGroup/GetUserList" idField="id" allowResize="true" showPager="false" pageSize="100">
+						<div id="datagrid1" emptyText="数据为空" class="mini-datagrid" style="width:100%;height:calc(100% - 90px);" idField="id" allowResize="true" showPager="false" pageSize="100">
 							<div property="columns">
 								<div field="Name" width="100" headerAlign="center" align="center" allowSort="true" property="filter">
 									用户姓名
@@ -135,7 +154,32 @@
 			var deptTree = mini.get('treeMini');
 			var userGrid = mini.get("datagrid1");
 			var visited = mini.get('btnEdit1');
-			// getID();
+			var authorizedType =mini.get('AuthorizedType');
+			var effectiveTime = mini.get('EffectiveTime');
+			var allowPassCount =mini.get('AllowPassCount');
+			deptTree.setUrl(PublicUrlAccess+'UserBindPerGroup/GetBuildingUnitList');
+			userGrid.setUrl(PublicUrlAccess+'UserBindPerGroup/GetUserList');
+			dataObj.EffectiveTime = tomorrow();
+			dataObj.EffectiveTime = dataObj.EffectiveTime.toLocaleString();
+			effectiveTime.setValue(dataObj.EffectiveTime);
+			authorizedType.on("valuechanged", function (e) {
+				if(e.selected.id=='1'){
+					effectiveTime.setReadOnly(false);
+					effectiveTime.removeCls("asLabel");
+					allowPassCount.setReadOnly(false);
+					allowPassCount.removeCls("asLabel");
+				}else if(e.selected.id=='2'){
+					allowPassCount.setReadOnly(true);
+					allowPassCount.addCls("asLabel");
+					effectiveTime.setReadOnly(false);
+					effectiveTime.removeCls("asLabel");
+				}else{
+					effectiveTime.setReadOnly(true);
+					effectiveTime.addCls("asLabel");
+					allowPassCount.setReadOnly(false);
+					allowPassCount.removeCls("asLabel");
+				}
+			})
 			if(dataObj.status){
 				stopCamera();
 			}
@@ -149,8 +193,13 @@
 							var info=res.IDInfo;
 							mini.get("Name").setValue(info.Name);
 							mini.get("ID").setValue(info.ID);
-							mini.get("Name").setReadOnly('readonly','true')
-							mini.get("ID").setReadOnly('readonly','true')
+							mini.get("Name").setReadOnly(true);
+							mini.get("ID").setReadOnly(true);
+							mini.get("Name").setIsValid(true);
+							mini.get("ID").setIsValid(true);
+							mini.get("Name").addCls("asLabel");
+							mini.get("ID").addCls("asLabel");
+							dataObj.baseSrc=info.Picture;
 							$('.picture-src').attr('src',"data:image/png;base64,"+info.Picture);
 						} else {
 							mini.showTips({
@@ -170,6 +219,7 @@
 			//
 			function SavePictrue(){
 				dataObj.cameraFace = $('.img-face')[0].src;
+				dataObj.baseSrc = dataObj.faceWS;
 				$('#takePic').attr('src',dataObj.cameraFace);
 				$('#takePic').css('width','200px');
 				closeCameraWin();
@@ -198,7 +248,7 @@
 						});
 				    }
 				});
-				}
+			}
 			//关闭摄像头
 			function stopCamera(){
 				$.ajax({
@@ -248,6 +298,7 @@
 
 					ws.onmessage = function(evt) {
 						var received_msg = evt.data;
+						dataObj.faceWS=received_msg;
 						$('.img-face').attr('src',"data:image/png;base64,"+received_msg); //收到图片
 					};
 
@@ -266,11 +317,18 @@
 				var Reason = mini.get('textarea1').getValue();
 				var data = form.getData(); //获取表单多个控件的数据
 				dataObj.AuthorizeTime = new Date();
-				debugger
-				dataObj.EffectiveTime = tomorrow();
-				dataObj.EffectiveTime = dataObj.EffectiveTime.toLocaleString()
 				dataObj.AuthorizeTime = dataObj.AuthorizeTime.toLocaleString();
-				debugger
+				dataObj.EffectiveTime = effectiveTime.getValue().toLocaleString();
+				dataObj.AuthorizedType = authorizedType.getValue();
+				dataObj.AllowPassCount = allowPassCount.getValue();
+				if(dataObj.AuthorizedType=='时间和次数'||dataObj.AuthorizedType=='1'){
+					dataObj.AuthorizedType = 1;
+				}else if(dataObj.AuthorizedType=='2'){
+					dataObj.AuthorizedType =Number(dataObj.AuthorizedType);
+					dataObj.AllowPassCount = '';
+				}else{
+					dataObj.AuthorizedType =Number(dataObj.AuthorizedType);
+				}
 				//var json = mini.encode(data); //序列化成JSON
 				$.ajax({
 					type: "post",
@@ -283,10 +341,10 @@
 							ProjectID: projectID,
 							VisitorName: data.VisitorName,
 							VisitedUserID: dataObj.VisitedUserID,
-							AuthorizedType: 1,
+							AuthorizedType: dataObj.AuthorizedType,
 							AuthorizeTime: dataObj.AuthorizeTime,
 							EffectiveTime: dataObj.EffectiveTime,
-							AllowPassCount: 1,
+							AllowPassCount: dataObj.AllowPassCount,
 							PassedCount: 1,
 							PhoneNumber: data.PhoneNumber,
 							IDCard: data.IDCard,
@@ -299,11 +357,11 @@
 						mini.unmask(document.body);
 						if(res.Status) {
 							mini.showTips({
-								content: '保存成功',
+								content: '访客授权成功',
 								state: 'success',
 								timeout: 3000
 							});
-							window.location.reload();
+							reloadPage();
 						} else {
 							mini.showTips({
 								content: res.Msg,
@@ -444,22 +502,25 @@
 				});
 			}
 		function GetPicName() {
-			var picBase64Str = $(".picture-src").attr("src");
-			picBase64Str = picBase64Str.substr(picBase64Str.indexOf(",") + 1, picBase64Str.length);
-			if(picBase64Str=="../img/defPic.png"){
-				picBase64Str=$('#takePic').attr("src");
+			if(!dataObj.baseSrc&&dataObj.baseSrc!=''){
+				mini.showTips({
+					content: '请上传人脸图片',
+					state: 'danger',
+					timeout: 3000
+				});
+				return false;
 			}
 			$.ajax({
-				url: PublicUrlAccess+"/UserBindPerGroup/SavePicture",
+				url: PublicUrlAccess+"UserBindPerGroup/SavePicture",
 				type: "POST",
 				data: {
 					projectId:projectID,
-					picBase64Str: picBase64Str
+					picBase64Str: dataObj.baseSrc
 				},
 				success: function(data) {
 					if(!data.Status) {
 						mini.showTips({
-							content: res.Msg,
+							content: data.Msg,
 							state: 'danger',
 							timeout: 3000
 						});
@@ -472,6 +533,31 @@
 					}
 				},
 			});
+		}
+		function reloadBtn(){
+			reloadPage();
+		}
+		function reloadPage(){
+			var textbox= $(".mini-textbox").length;
+	        for(var i=0;i<textbox;i++) {
+	            var id = $(".mini-textbox")[i].id;
+	            mini.get(id).setValue('');
+	        }
+	        visited.setValue('');
+	        visited.setText('');
+	        authorizedType.setValue('时间和次数');
+			dataObj.EffectiveTime = tomorrow();
+			dataObj.EffectiveTime = dataObj.EffectiveTime.toLocaleString();
+			effectiveTime.setValue(dataObj.EffectiveTime);
+			allowPassCount.setValue('');
+			$('.picture-src').attr('src',"../img/defPic.png");
+			$('#takePic').attr('src','../img/camera.png');
+			dataObj.baseSrc='';
+			effectiveTime.setReadOnly(false);
+			effectiveTime.removeCls("asLabel");
+			allowPassCount.setReadOnly(false);
+			allowPassCount.removeCls("asLabel");
+//			location.replace('');
 		}
 		function uuid() {
 		    var s = [];

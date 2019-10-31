@@ -7,22 +7,31 @@
     <link href="../css/publicCss/demo.css" rel="stylesheet" type="text/css" />
     <script src="../scripts/boot.js" type="text/javascript"></script>
     <script src="../scripts/miniui/ColumnsMenu.js" type="text/javascript"></script>
+    <script src="../js/publicValue.js" type="text/javascript"></script>
     <style>
     body{
         margin:0;
         padding:0;
         border:0;
         width:100%;
-        height:100%;
+        height:calc(100% - 40px);
         overflow:hidden;
     }
     </style>
 
 </head>
 <body>
-    <div id="datagrid1" class="mini-datagrid" style="width:100%;height: 100%;" allowResize="true"
-        url="http://49.232.26.220:9998/RecordVisitorAuthorize/GetList"  idField="id" multiSelect="true" showFilterRow="true"
-    >
+	<div class="mini-toolbar" style="border-bottom:0;padding:0px;">
+        <table style="width:100%;">
+            <tr>
+                <td style="width:100%;">
+                    <a class="mini-button" iconCls="icon-reload" plain="true" onclick="reload()">刷新</a>         
+                </td>
+            </tr>
+        </table>           
+    </div>
+    <div id="datagrid1" class="mini-datagrid" style="width:100%;height: 100%;" allowResize="true" idField="id" multiSelect="true" showFilterRow="true"
+    >        
         <div property="columns">      
             <div field="VisitorName" width="120" headerAlign="center" align="center" allowSort="true" renderer="IsNull">访客姓名
 				<input id="VisitorNameFilter" property="filter" class="mini-textbox" style="width:100%;" onvaluechanged="onFilterChanged" />
@@ -40,7 +49,7 @@
             <div headerAlign="center" align="center" field="AuthorizedType" width="100" renderer="onAuthorizedTypeRenderer">授权类型
             	<input id="authorizedType" property="filter" class="mini-combobox" showNullItem="true"  style="width:100%;" onvaluechanged="onFilterChanged" />	
             </div>
-            <div headerAlign="center" align="center" field="Reason" width="100" allowSort="true" renderer="IsNull">允许通行次数
+            <div headerAlign="center" align="center" field="AllowPassCount" width="100" allowSort="true" renderer="IsNull">允许通行次数
             </div>
             <div headerAlign="center" align="center" field="AuthorizeTime" width="150" allowSort="true" dateFormat="yyyy-MM-dd HH:mm:ss">授权时间
             	<input id="AuthorizedTimeEndFilter" property="filter" class="mini-datepicker" format="yyyy-MM-dd H:mm:ss" timeFormat="H:mm:ss" style="width:100%;" onvaluechanged="onFilterChanged" showTime="true" allowInput="false" showOkButton="true" />
@@ -48,7 +57,7 @@
             <div headerAlign="center" align="center" field="EffectiveTime" width="150" allowSort="true" dateFormat="yyyy-MM-dd HH:mm:ss">有效时间
             	<input id="EffectiveTimeEndFilter" property="filter" class="mini-datepicker" format="yyyy-MM-dd H:mm:ss" timeFormat="H:mm:ss" style="width:100%;" onvaluechanged="onFilterChanged" showTime="true" allowInput="false" showOkButton="true" />
             </div>  
-            <div headerAlign="center" align="center" field="OperatorName" width="100" allowSort="true" renderer="IsNull">授权人
+            <div headerAlign="center" align="center" field="OperatorName" width="100" allowSort="true" renderer="projectName">授权人
             </div>   
             <div headerAlign="center" align="center" field="RecordTime" width="150" allowSort="true" dateFormat="yyyy-MM-dd HH:mm:ss">记录时间
             </div>  
@@ -60,6 +69,7 @@
         mini.parse();
 		var projectId=sessionStorage.getItem('projectid');
         var grid = mini.get("datagrid1");
+        grid.setUrl(PublicUrlAccess + "RecordVisitorAuthorize/GetList")
 	      grid.load({
 	      	ProjectID:projectId
 	      },function(res){
@@ -91,6 +101,12 @@
             }
             return "";
         }
+        function projectName(){
+        	var projectInfo = sessionStorage.getItem('userData');
+        	projectInfo = JSON.parse(projectInfo).parkingAdmin;
+        	var projectName = projectInfo.Name;
+        	return projectName;
+        }
 		//判断为空
         function IsNull(e) {
             if (e.value == "" || e.value == null) {
@@ -99,6 +115,9 @@
             else {
                 return e.value
             }
+        }
+        function reload(){
+        	grid.reload();
         }
 
     </script>
